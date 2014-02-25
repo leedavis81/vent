@@ -1,0 +1,24 @@
+{
+    "name": "leedavis81/vent",
+    "description": "PHP variable events.",
+    "keywords": ["php", "event", "variable"],
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Lee Davis",
+            "email": "leedavis81@hotmail.com",
+            "homepage": "http://www.duckheads.co.uk",
+            "role": "Developer"
+        }
+    ],    
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "autoload": {
+        "psr-0": { "Vent\\": "src/", "VentTest\\": "tests/"}
+    }
+}
