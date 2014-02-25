@@ -30,7 +30,7 @@ class Foo
    
     public function __construct()
     {
-        $this->on('read')->of('bar')->run(function(){
+        $this->registerEvent('read', 'bar', function(){
             throw new \Exception('Don\'t touch my bar!');
         });
     }
@@ -48,7 +48,7 @@ $foo->touchBar(); // Fatal error: Uncaught exception 'Exception' with message 'D
 Or you can register a write event to protect the variable from being overwritten (even from within the scope of your class)
 
 ```php
-$this->on('write')->of('bar')->run(function(){
+$this->registerEvent('write', 'bar', function(){
   throw new \Exception('Don\'t write to my bar!');
 });
         
@@ -69,7 +69,7 @@ public $bar = 'Bill';
 
 public function __construct()
 {
-  $this->on('read')->of('bar')->run(function(){
+  $this->registerEvent('read', 'bar', function(){
     return 'Ben';
   });
 }
@@ -87,7 +87,7 @@ public $bar = 'Bill';
 
 public function __construct()
 {
-  $this->on('read')->of('bar')->run(function(){
+  $this->registerEvent('read','bar', function(){
     sleep(1);
     return microtime();
   }, true);     // pass in "true" here (defaults to false)
@@ -111,7 +111,7 @@ class Foo
 
 $foo = new Foo();
 
-$foo->on('read')->of('bar')->run(function(){
+$foo->registerEvent('read', 'bar', function(){
     throw new \Exception('Don\'t touch my bar!');
 });
 

@@ -10,7 +10,7 @@ class VariableTest extends VentTestCase
     {
         $user = new User();
         $counter = 0;
-        $user->on('read')->of('name')->run(function() use (&$counter){
+        $user->registerEvent('read', 'name', function() use (&$counter){
             $counter++;
         });
         $user->name;
@@ -22,11 +22,10 @@ class VariableTest extends VentTestCase
         $user = new User();
         $counter = 0;
 
-        $user->on('read')->of('name')->run(function() use (&$counter){
+        $user->registerEvent('read', 'name', function() use (&$counter){
             $counter++;
         });
-
-        $user->on('read')->of('name')->run(function() use (&$counter){
+        $user->registerEvent('read', 'name', function() use (&$counter){
             $counter++;
         });
 
@@ -42,7 +41,9 @@ class VariableTest extends VentTestCase
         $user->setName($testName);
 
         $string = 'SomeRandomStringABC123';
-        $user->on('read')->of('name')->run(function() use ($string) {return $string;});
+        $user->registerEvent('read', 'name', function() use ($string){
+            return $string;
+        });
 
         $response = $user->name;
 
@@ -53,7 +54,7 @@ class VariableTest extends VentTestCase
     {
         $user = new User();
         $counter = 0;
-        $user->on('write')->of('name')->run(function() use (&$counter){
+        $user->registerEvent('write', 'name', function() use (&$counter){
             $counter++;
         });
         $this->assertSame(0, $counter);

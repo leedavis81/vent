@@ -9,32 +9,6 @@ namespace VentTest;
  */
 class VariableTest extends VentTestCase
 {
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionWhenOfBeforeOn()
-    {
-        $user = new External\Classes\User();
-        $user->of('name');
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionWhenRunBeforeOf()
-    {
-        $user = new External\Classes\User();
-        $user->run(function(){});
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionWhenRetainingWriteEvent()
-    {
-        $user = new External\Classes\User();
-        $user->on('write')->of('name')->run(function(){}, true);
-    }
 
     /**
      * @expectedException \Exception
@@ -42,7 +16,7 @@ class VariableTest extends VentTestCase
     public function testExceptionWhenRetainingReadWithNullResponse()
     {
         $user = new External\Classes\User();
-        $user->on('read')->of('name')->run(function(){}, true);
+        $user->registerEvent('read', 'name', function(){}, true);
         $user->name;
     }
 
@@ -60,7 +34,7 @@ class VariableTest extends VentTestCase
         };
 
         $user = new External\Classes\User();
-        $user->on('read')->of('name')->run($runOnce, true);
+        $user->registerEvent('read', 'name', $runOnce, true);
         for ($x = 0; $x < $readAttempts; $x++)
         {
             $user->name;
@@ -78,7 +52,7 @@ class VariableTest extends VentTestCase
         };
 
         $user = new External\Classes\User();
-        $user->on('read')->of('name')->run($runMany, false);
+        $user->registerEvent('read', 'name', $runMany, false);
         for ($x = 0; $x < $readAttempts; $x++)
         {
             $user->name;
@@ -96,7 +70,7 @@ class VariableTest extends VentTestCase
         $user->name->first = $firstName;
 
         $counter = 0;
-        $user->on('read')->of('name')->run(function() use (&$counter){
+        $user->registerEvent('read', 'name', function() use (&$counter){
             $counter++;
         });
 
@@ -113,7 +87,7 @@ class VariableTest extends VentTestCase
         $user = new External\Classes\User();
 
         $counter = 0;
-        $user->on('write')->of('name')->run(function() use (&$counter){
+        $user->registerEvent('write', 'name', function() use (&$counter){
             $counter++;
         });
 
@@ -136,7 +110,7 @@ class VariableTest extends VentTestCase
 
         $firstName = 'LeeRoy';
         $user->name = ['firstName' => $firstName];
-        $user->on('read')->of('name')->run(function() use (&$counter){
+        $user->registerEvent('read', 'name', function() use (&$counter){
             $counter++;
         });
 
@@ -152,7 +126,7 @@ class VariableTest extends VentTestCase
         $user = new External\Classes\User();
 
         $counter = 0;
-        $user->on('write')->of('name')->run(function() use (&$counter){
+        $user->registerEvent('write', 'name', function() use (&$counter){
             $counter++;
         });
 
