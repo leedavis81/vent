@@ -38,7 +38,7 @@ trait VentTrait
         }
 
         foreach (array_filter((array) $event, function($item) {
-            return ($item == 'read' || $item == 'write') ? true : false;
+            return in_array($item, ['read', 'write', 'get', 'set']);
         }) as $event)
         {
             foreach (array_unique((array) $variables) as $var)
@@ -53,10 +53,10 @@ trait VentTrait
 
                 unset($this->$var);
 
-                if ($event === 'read')
+                if ($event === 'read' || $event === 'get')
                 {
                     $this->_ventEvents['read'][$var][] = ['callable' => $action, 'retain' => $retainResponse];
-                } elseif ($event === 'write')
+                } elseif ($event === 'write' || $event === 'set')
                 {
                     $this->_ventEvents['write'][$var][] = ['callable' => $action];
                 }

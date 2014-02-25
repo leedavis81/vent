@@ -33,6 +33,18 @@ class VariableTest extends VentTestCase
         $this->assertSame(2, $counter);
     }
 
+    public function testGetEventAlias()
+    {
+        $user = new User();
+        $counter = 0;
+        $user->registerEvent('get', 'name', function() use (&$counter){
+            $counter++;
+        });
+        $user->name;
+        $this->assertSame(1, $counter);
+    }
+
+
     public function testReturnReadEventOnPublicProperty()
     {
         $testName = 'LeeRoyJenkins';
@@ -55,6 +67,18 @@ class VariableTest extends VentTestCase
         $user = new User();
         $counter = 0;
         $user->registerEvent('write', 'name', function() use (&$counter){
+            $counter++;
+        });
+        $this->assertSame(0, $counter);
+        $user->name = 'LeeRoy';
+        $this->assertSame(1, $counter);
+    }
+
+    public function testSetEventAlias()
+    {
+        $user = new User();
+        $counter = 0;
+        $user->registerEvent('set', 'name', function() use (&$counter){
             $counter++;
         });
         $this->assertSame(0, $counter);
