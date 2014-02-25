@@ -79,8 +79,9 @@ public $bar = 'Bill';
 public function __construct()
 {
   $this->on('read')->of('bar')->run(function(){
+    sleep(1);
     return microtime();
-  }, true);     //pass in true here
+  }, true);     // pass in "true" here (defaults to false)
 }
         
         
