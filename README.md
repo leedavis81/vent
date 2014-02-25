@@ -17,7 +17,7 @@ php composer.phar require leedavis81/vent:dev-master
 
 ## Usage
 
-Have you ever needed to hook an event anytime a PHP variable is read? Maybe you want to ensure complete immutability even within the scope (private) of you class.
+Have you ever needed to hook an event anytime a PHP variable is read? Maybe you want to ensure complete immutability even within the scope (private) of your class.
 PHP variable events can be easily created by hooking into the read or write of any variable.
 
 ```php
