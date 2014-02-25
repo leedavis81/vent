@@ -4,7 +4,6 @@ namespace Vent;
 trait PublicVentTrait
 {
     /**
-     * @todo: Make sure this can't be accessed (even from within a private scope) - use this tool to trigger an exception
      * A proxy of variables
      * @var array $variables
      */
@@ -34,8 +33,8 @@ trait PublicVentTrait
 
             $this->_ventEvents['read']['_ventVariables'][] = ['callable' => $function, 'retain' => false];
             $this->_ventEvents['read']['_ventEvents'][] = ['callable' => $function, 'retain' => false];
-            $this->_ventEvents['write']['_ventVariables'][] = ['callable' => $function, 'retain' => false];
-            $this->_ventEvents['write']['_ventEvents'][] = ['callable' => $function, 'retain' => false];
+            $this->_ventEvents['write']['_ventVariables'][] = ['callable' => $function];
+            $this->_ventEvents['write']['_ventEvents'][] = ['callable' => $function];
         }
 
         foreach (array_filter((array) $event, function($item) {
@@ -48,7 +47,6 @@ trait PublicVentTrait
                 // this should only occur once per variable, to prevent re-reads occurring ($this->$var will trigger __get)
                 if (!isset($this->_ventVariables[$var]))
                 {
-                    //@todo: might need to break scope on this
                     // The property could exist but isn't set yet, force it as null to avoid additional overload look ups for multiple events
                     $this->_ventVariables[$var] = ($this->$var !== null) ? $this->$var : new Null();
                 }
