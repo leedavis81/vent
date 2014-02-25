@@ -98,13 +98,13 @@ $foo = new Foo();
 var_dump($foo->bar === $foo->bar);   // true
 ```
 
-All events must be registered within the context of your class when using `VentTrait`. However, if you'd like to register them from a public or protected scope then you can use `PublicVentTrait` or `ExtendableVentTrait`
+All events must be registered within the context of your class when using `VentTrait`. However, if you'd like to register them from a public or protected scope then simply change the scope of the `registerEvent` method when importing the trait
 
 ```php
 <?php
 class Foo
 {
-    use Vent\PublicVentTrait;   // allow public event registration
+    use Vent\VentTrait {registerEvent as public;}   // allow public event registration
    
     public $bar;
 }

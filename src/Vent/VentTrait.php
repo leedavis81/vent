@@ -13,7 +13,7 @@ trait VentTrait
      * Registered events ['read' => ..., 'write' => ...]
      * @var array $readEvents
      */
-    private $_ventEvents = array();
+    private $_ventEvents = [];
 
     /**
      * Register an event to be triggered

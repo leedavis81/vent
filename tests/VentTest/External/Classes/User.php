@@ -1,11 +1,11 @@
 <?php
 namespace VentTest\External\Classes;
 
-use Vent\PublicVentTrait;
+use Vent\VentTrait;
 
 class User
 {
-    use PublicVentTrait;
+    use VentTrait {registerEvent as public;}
 
     public $name;
     protected $address;
