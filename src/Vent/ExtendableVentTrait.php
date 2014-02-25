@@ -1,7 +1,7 @@
 <?php
 namespace Vent;
 
-trait ExtendableVentTrait
+trait VentTrait
 {
     /**
      * @todo: Make sure this can't be accessed (even from within a private scope) - use this tool to trigger an exception
@@ -17,17 +17,15 @@ trait ExtendableVentTrait
     private $_ventEvents = array();
 
     /**
-     * A temporary array of registered events and variables array('events' => [], 'variables' => [])
-     * @var array $registered
+     * Register an event to be triggered
+     * @param $event - the name of the event - can be 'read', 'write' or an array
+     * @param $variables - the name(s) of the variables(s) to trigger the event on
+     * @param callable $action - The action to be triggered
+     * @param bool $retainResponse
      */
-    private $_ventRegistered;
-
-
-    protected function on($eventName)
+    protected function registerEvent($event, $variables, \Closure $action, $retainResponse = false)
     {
-        // reset anything previously registered
-        $this->_ventRegistered = null;
-
+        // this should really be move into some form of init(), should we steal the __construct?
         if (!isset($this->_ventEvents['read']['_readEvents']))
         {
             $function = function(){
@@ -36,77 +34,37 @@ trait ExtendableVentTrait
 
             $this->_ventEvents['read']['_ventVariables'][] = ['callable' => $function, 'retain' => false];
             $this->_ventEvents['read']['_ventEvents'][] = ['callable' => $function, 'retain' => false];
-            $this->_ventEvents['read']['_ventRegistered'][] = ['callable' => $function, 'retain' => false];
             $this->_ventEvents['write']['_ventVariables'][] = ['callable' => $function, 'retain' => false];
             $this->_ventEvents['write']['_ventEvents'][] = ['callable' => $function, 'retain' => false];
-            $this->_ventEvents['write']['_ventRegistered'][] = ['callable' => $function, 'retain' => false];
         }
 
-        $events = array_filter((array) $eventName, function($item) {
+        foreach (array_filter((array) $event, function($item) {
             return ($item == 'read' || $item == 'write') ? true : false;
-        });
-
-        $this->_ventRegistered['events'] = $events;
-
-        return $this;
-    }
-
-    protected function of($variableName)
-    {
-        if ($this->_ventRegistered['events'] == null)
+        }) as $event)
         {
-            throw new \Exception('First define the event you wish to use with "on()"');
-        }
-        foreach (array_unique((array) $variableName) as $var)
-        {
-            // Don't check and fail on property_exists, they may be overloading
-
-            // this should only occur once per variable, to prevent re-reads occurring ($this->$var will trigger __get)
-            if (!isset($this->_ventVariables[$var]))
+            foreach (array_unique((array) $variables) as $var)
             {
-                //@todo: might need to break scope on this
-                // The property could exist but isn't set yet, force it as null to avoid additional overload look ups for multiple events
-                $this->_ventVariables[$var] = ($this->$var !== null) ? $this->$var : new Null();
-            }
+                // Don't check and fail on property_exists, they may be overloading
+                // this should only occur once per variable, to prevent re-reads occurring ($this->$var will trigger __get)
+                if (!isset($this->_ventVariables[$var]))
+                {
+                    //@todo: might need to break scope on this
+                    // The property could exist but isn't set yet, force it as null to avoid additional overload look ups for multiple events
+                    $this->_ventVariables[$var] = ($this->$var !== null) ? $this->$var : new Null();
+                }
 
-            unset($this->$var);
-            $this->_ventRegistered['variables'][] = $var;
-        }
+                unset($this->$var);
 
-        return $this;
-    }
-
-    /**
-     * Closure to be run
-     * @param callable $action
-     * @param bool $retainResponse - Retain and reuse closure response for other registered events (prevents callable from being re-triggered)
-     * @throws \Exception
-     */
-    protected function run(\Closure $action, $retainResponse = false)
-    {
-        if (empty($this->_ventRegistered['variables']))
-        {
-            throw new \Exception('First define the variables you wish to trigger events for with "of()"');
-        }
-        foreach ($this->_ventRegistered['events'] as $event)
-        {
-            foreach ($this->_ventRegistered['variables'] as $var)
-            {
                 if ($event === 'read')
                 {
                     $this->_ventEvents['read'][$var][] = ['callable' => $action, 'retain' => $retainResponse];
                 } elseif ($event === 'write')
                 {
-                    if ($retainResponse)
-                    {
-                        throw new \Exception('Unable to retain a closure response for variable writing');
-                    }
                     $this->_ventEvents['write'][$var][] = ['callable' => $action];
                 }
             }
         }
     }
-
 
     /**
      * Handle a write request

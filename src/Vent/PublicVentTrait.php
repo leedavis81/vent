@@ -16,7 +16,13 @@ trait PublicVentTrait
      */
     private $_ventEvents = array();
 
-
+    /**
+     * Register an event to be triggered
+     * @param $event - the name of the event - can be 'read', 'write' or an array
+     * @param $variables - the name(s) of the variables(s) to trigger the event on
+     * @param callable $action - The action to be triggered
+     * @param bool $retainResponse
+     */
     public function registerEvent($event, $variables, \Closure $action, $retainResponse = false)
     {
         // this should really be move into some form of init(), should we steal the __construct?
