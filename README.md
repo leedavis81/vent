@@ -79,6 +79,27 @@ $foo = new Foo();
 echo $foo->bar; // "Ben"
 ```
 
+To pass in parameters into your method simply provide them when registering the event.
+
+Please note there are two reserved strings that if passed in as a parameter will be replaced.
+`_OVL_NAME_` - replaced with the name of the variable you're accessing (set or get)
+`_OVL_VALUE_` - replaces with the value your updating a variables with (set only)
+
+```php
+
+public $bar;
+public function __construct()
+{
+  $this->registerEvent('write', 'bar', function($var1, $name, $value){
+    echo 'Why ' . $var1 . ' you\'re trying to overwrite "' . $name . '" to contain "' . $value . '"';
+  }, ['bill', '_OVL_NAME_', '_OVL_VALUE_']);
+}
+
+$foo = new Foo();
+$foo->bar = 'cheese';      // Why bill you're trying to overwrite "bar" to contain "cheese"
+```
+
+
 If you are returning a response on your event, this can be retained to prevent additional execution on further reads.
 
 ```php
@@ -90,7 +111,7 @@ public function __construct()
   $this->registerEvent('read','bar', function(){
     sleep(1);
     return microtime();
-  }, true);     // pass in "true" here (defaults to false)
+  }, null, true);     // pass in "true" here (defaults to false)
 }
         
         
@@ -118,7 +139,13 @@ $foo->registerEvent('read', 'bar', function(){
 $foo->bar;  // Fatal error: Uncaught exception 'Exception' with message 'Don't touch my bar!'
 ```
 
+### But you stole my magic
+It's true that this little trait applies a __get and __set method to your class.
+
+If you still want to be able to use it and still be able to .. {instructions}
+
+
 ### todos
 - Allow event triggering for array offset reads $foo->bar['offset'];
-- Need to inject variables into the callable event
 - Expand event scope to include 'delete'
+- Add a method to remove variables from proxy (to increase perf)

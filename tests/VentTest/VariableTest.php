@@ -16,7 +16,7 @@ class VariableTest extends VentTestCase
     public function testExceptionWhenRetainingReadWithNullResponse()
     {
         $user = new External\Classes\User();
-        $user->registerEvent('read', 'name', function(){}, true);
+        $user->registerEvent('read', 'name', function(){}, null, true);
         $user->name;
     }
 
@@ -34,7 +34,7 @@ class VariableTest extends VentTestCase
         };
 
         $user = new External\Classes\User();
-        $user->registerEvent('read', 'name', $runOnce, true);
+        $user->registerEvent('read', 'name', $runOnce, null, true);
         for ($x = 0; $x < $readAttempts; $x++)
         {
             $user->name;
@@ -52,7 +52,7 @@ class VariableTest extends VentTestCase
         };
 
         $user = new External\Classes\User();
-        $user->registerEvent('read', 'name', $runMany, false);
+        $user->registerEvent('read', 'name', $runMany);
         for ($x = 0; $x < $readAttempts; $x++)
         {
             $user->name;

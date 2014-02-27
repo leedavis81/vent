@@ -33,6 +33,60 @@ class VariableTest extends VentTestCase
         $this->assertSame(2, $counter);
     }
 
+    public function testReadActionWithParameters()
+    {
+        $user = new User();
+
+        $name = 'bill';
+        $user->registerEvent('read', 'name', function($name){
+            return $name;
+        }, [$name]);
+
+        $this->assertEquals($name, $user->name);
+    }
+
+    public function testWriteActionWithParameters()
+    {
+        $user = new User();
+
+        $newName = 'bill';
+        $user->registerEvent('write', 'name', function(&$name) {
+            $name = 'bob';
+        }, [&$newName]);
+
+        $user->name = 'ben';
+
+        $this->assertEquals('bob', $newName);
+    }
+
+
+    public function testReadActionWithReservedParameters()
+    {
+        $user = new User();
+        $user->name = '';
+        $user->registerEvent('read', 'name', function($overloadedName){
+            return $overloadedName . '_SOMEEXTRA';
+        }, ['_OVL_NAME_']);
+
+        $this->assertEquals('name_SOMEEXTRA', $user->name);
+    }
+
+    public function testWriteActionWithReservedParameters()
+    {
+        $user = new User();
+
+        $firstName = 'bill';
+
+        $user->registerEvent('write', 'name', function(&$firstName, $overloadedName, $overloadedValue) {
+            $firstName = 'bob_' . $overloadedName . '_' . $overloadedValue;
+        }, [&$firstName, '_OVL_NAME_', '_OVL_VALUE_']);
+
+        $user->name = 'ben';
+
+        $this->assertEquals('bob_name_ben', $firstName);
+    }
+
+
     public function testGetEventAlias()
     {
         $user = new User();

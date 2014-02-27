@@ -20,9 +20,10 @@ trait VentTrait
      * @param $event - the name of the event - can be 'read', 'write' or an array
      * @param $variables - the name(s) of the variables(s) to trigger the event on
      * @param callable $action - The action to be triggered
+     * @param array|null $params - an array of parameters to be passed into the action
      * @param bool $retainResponse
      */
-    private function registerEvent($event, $variables, \Closure $action, $retainResponse = false)
+    private function registerEvent($event, $variables, \Closure $action, $params = null, $retainResponse = false)
     {
         // this should really be move into some form of init(), should we steal the __construct?
         if (!isset($this->_ventEvents['read']['_readEvents']))
@@ -49,16 +50,17 @@ trait VentTrait
                 {
                     // The property could exist but isn't set yet, force it as null to avoid additional overload look ups for multiple events
                     $this->_ventVariables[$var] = ($this->$var !== null) ? $this->$var : new Null();
-                }
 
-                unset($this->$var);
+                    // Only attempt unset once we have it copied
+                    unset($this->$var);
+                }
 
                 if ($event === 'read' || $event === 'get')
                 {
-                    $this->_ventEvents['read'][$var][] = ['callable' => $action, 'retain' => $retainResponse];
+                    $this->_ventEvents['read'][$var][] = ['callable' => $action, 'params' => (array) $params, 'retain' => $retainResponse];
                 } elseif ($event === 'write' || $event === 'set')
                 {
-                    $this->_ventEvents['write'][$var][] = ['callable' => $action];
+                    $this->_ventEvents['write'][$var][] = ['callable' => $action, 'params' => (array) $params];
                 }
             }
         }
@@ -76,7 +78,24 @@ trait VentTrait
             $eventSize = sizeof($this->_ventEvents['write'][$name]);
             for ($x = 0; $x < $eventSize; $x++)
             {
-                $this->_ventEvents['write'][$name][$x]['callable']();
+                // replace reserved keyword
+                $paramSize = sizeof($this->_ventEvents['write'][$name][$x]['params']);
+                for($y = 0; $y < $paramSize; $y++)
+                {
+                    if ($this->_ventEvents['write'][$name][$x]['params'][$y] == '_OVL_NAME_')
+                    {
+                        $this->_ventEvents['write'][$name][$x]['params'][$y] = $name;
+                    } elseif ($this->_ventEvents['write'][$name][$x]['params'][$y] == '_OVL_VALUE_')
+                    {
+                        $this->_ventEvents['write'][$name][$x]['params'][$y] = $value;
+                    }
+                }
+
+                // execute the action
+                call_user_func_array(
+                    $this->_ventEvents['write'][$name][$x]['callable'],
+                    $this->_ventEvents['write'][$name][$x]['params']
+                );
             }
         }
 
@@ -109,7 +128,22 @@ trait VentTrait
                     return $this->_ventEvents['read'][$name][$x]['response'];
                 }
 
-                $response = $this->_ventEvents['read'][$name][$x]['callable']();
+                // replace reserved keyword
+                $paramSize = sizeof($this->_ventEvents['read'][$name][$x]['params']);
+                for($y = 0; $y < $paramSize; $y++)
+                {
+                    if ($this->_ventEvents['read'][$name][$x]['params'][$y] == '_OVL_NAME_')
+                    {
+                        $this->_ventEvents['read'][$name][$x]['params'][$y] = $name;
+                    }
+                }
+
+                // execute the action
+                $response = call_user_func_array(
+                    $this->_ventEvents['read'][$name][$x]['callable'],
+                    $this->_ventEvents['read'][$name][$x]['params']
+                );
+
                 if ($this->_ventEvents['read'][$name][$x]['retain'] && is_null($response))
                 {
                     throw new \Exception('Event registered on read of variable "' . $name . '" does not return a retainable response - cannot be null');
