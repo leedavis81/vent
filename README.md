@@ -140,7 +140,7 @@ $foo->bar;  // Fatal error: Uncaught exception 'Exception' with message 'Don't t
 ```
 
 ### But you stole my magic
-It's true that this little trait applies a `__get` and `__set` method to your class. If your class already has a little magic and these these methods have already been applied then they'll overwrite the trait implementation. To get around this you can simply import them with a different method name, and call them in your own magic methods. For example:
+It's true that this little trait applies a `__get` and `__set` method to your class. If your class already has a little magic and these methods have already been applied then they'll overwrite the trait implementation. Maybe not what you want. To get around this you can simply import them with a different method name, and call them in your own magic methods. For example:
 ```php 
 
 class Foo()
