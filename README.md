@@ -81,9 +81,9 @@ echo $foo->bar; // "Ben"
 
 To pass in parameters into your method simply provide them when registering the event.
 
-Please note there are two reserved strings that if passed in as a parameter will be replaced.
-`_OVL_NAME_` - replaced with the name of the variable you're accessing (set or get)
-`_OVL_VALUE_` - replaces with the value your updating a variables with (set only)
+Please note there are two reserved strings that if passed in as a parameter will be replaced
+- `_OVL_NAME_`  replaced with the name of the variable you're accessing (set or get)
+- `_OVL_VALUE_`  replaced with the value your updating a variable with (set only)
 
 ```php
 
