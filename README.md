@@ -140,9 +140,22 @@ $foo->bar;  // Fatal error: Uncaught exception 'Exception' with message 'Don't t
 ```
 
 ### But you stole my magic
-It's true that this little trait applies a __get and __set method to your class.
+It's true that this little trait applies a `__get` and `__set` method to your class. If your class already has a little magic and these these methods have already been applied then they'll overwrite the trait implementation. To get around this you can simply import them with a different method name, and call them in your own magic methods. For example:
+```php 
 
-If you still want to be able to use it and still be able to .. {instructions}
+class Foo()
+{
+    use Vent\VentTrait {__get as get;}
+    
+    public function __get($name)
+    {
+        // You're own magic stuff will go here.
+        $this->get($name);   // Fire off the vent magic (if you need it)
+    }
+}
+
+```
+
 
 
 ### todos
