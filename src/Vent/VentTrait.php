@@ -17,9 +17,9 @@ trait VentTrait
 
     /**
      * Register an event to be triggered
-     * @param $event - the name of the event - can be 'read', 'write' or an array
-     * @param $variables - the name(s) of the variables(s) to trigger the event on
-     * @param callable $action - The action to be triggered
+     * @param string $event - the name of the event - can be 'read', 'write' or an array
+     * @param string|array $variables - the name(s) of the variables(s) to trigger the event on
+     * @param \Closure $action - The action to be triggered
      * @param array|null $params - an array of parameters to be passed into the action
      * @param bool $retainResponse
      */
