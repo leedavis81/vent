@@ -150,7 +150,7 @@ class Foo()
     public function __get($name)
     {
         // You're own magic stuff will go here.
-        $this->get($name);   // Fire off the vent magic (if you need it)
+        return $this->get($name);   // Fire off the vent magic (if you need it)
     }
 }
 
