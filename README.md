@@ -74,7 +74,6 @@ public function __construct()
   });
 }
         
-        
 $foo = new Foo();
 echo $foo->bar; // "Ben"
 ```
@@ -84,23 +83,25 @@ To pass in parameters into your method simply provide them when registering the 
 Please note there are two reserved strings that if passed in as a parameter will be replaced
 - `_OVL_NAME_`  replaced with the name of the variable you're accessing (set or get)
 - `_OVL_VALUE_`  replaced with the value your updating a variable with (set only)
+- `_CUR_VALUE_`  the current value of the variable
 
 ```php
 
-public $bar;
+public $bar = 'chips';
 public function __construct()
 {
-  $this->registerEvent('write', 'bar', function($var1, $name, $value){
-    echo 'Why ' . $var1 . ' you\'re trying to overwrite "' . $name . '" to contain "' . $value . '"';
-  }, ['bill', '_OVL_NAME_', '_OVL_VALUE_']);
+  $this->registerEvent('write', 'bar', function($var1, $name, $value, $cur_value){
+    echo 'Why ' . $var1 . ' you\'re trying to overwrite "' . $name . '", which contained "' . $cur_value . '" to contain "' . $value . '"';
+  }, ['bill', '_OVL_NAME_', '_OVL_VALUE_', '_CUR_VALUE_']);
 }
 
 $foo = new Foo();
-$foo->bar = 'cheese';      // Why bill you're trying to overwrite "bar" to contain "cheese"
+$foo->bar = 'cheese';      // Why bill you're trying to overwrite "bar", which contained "chips" to contain "cheese"
 ```
 
 
 If you are returning a response on your event, this can be retained to prevent additional execution on further reads.
+If you don't return anything from your action (or return a null) then nothing is retained and additional reads will cause re-execution of your registered action.
 
 ```php
 
@@ -138,6 +139,14 @@ $foo->registerEvent('read', 'bar', function(){
 
 $foo->bar;  // Fatal error: Uncaught exception 'Exception' with message 'Don't touch my bar!'
 ```
+
+### Supported Events
+
+| Event Name | Alias | Triggered |
+| ----- | -------- | -------- |
+read | get | Whenever an attempt to read the variable is performed |
+write | set | Whenever an attempt to write to the variable is performed |
+delete | unset | Whenever unset is called on the variable. Setting to null will not work. |
 
 ### But you stole my magic
 It's true that this little trait applies a `__get` and `__set` method to your class. If your class already has a little magic and these methods have already been applied then they'll overwrite the trait implementation. Maybe not what you want. To get around this you can simply import them with a different method name, and call them in your own magic methods. For example:

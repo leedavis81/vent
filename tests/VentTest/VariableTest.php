@@ -20,7 +20,7 @@ class VariableTest extends VentTestCase
         $user->name;
     }
 
-    public function testRetainingResponse()
+    public function testReadRetainingResponse()
     {
         $counter = 0;
         $readAttempts = 5;
@@ -42,7 +42,7 @@ class VariableTest extends VentTestCase
         $this->assertEquals(1, $counter);
     }
 
-    public function testNonRetainingResponse()
+    public function testReadNonRetainingResponse()
     {
         $counter = 0;
         $readAttempts = 5;
@@ -61,6 +61,61 @@ class VariableTest extends VentTestCase
         $this->assertEquals($readAttempts, $counter);
     }
 
+
+    public function testWriteRetainingResponse()
+    {
+        $counter = 0;
+        $writeAttempts = 5;
+        $runOnce = function() use (&$counter){
+            $counter++;
+            if ($counter > 1)
+            {
+                throw new \Exception('This callable should have only ever been run once!');
+            }
+            return 'madeUpRetainableResponse';
+        };
+
+        $user = new External\Classes\User();
+        $user->registerEvent('write', 'name', $runOnce, null, true);
+        for ($x = 0; $x < $writeAttempts; $x++)
+        {
+            $user->name = 'test';
+        }
+        $this->assertEquals(1, $counter);
+    }
+
+
+    public function testWriteNonRetainingResponse()
+    {
+        $counter = 0;
+        $writeAttempts = 5;
+        $runMany = function() use (&$counter){
+            $counter++;
+            return 'madeUpResponse';
+        };
+
+        $user = new External\Classes\User();
+        $user->registerEvent('write', 'name', $runMany);
+        for ($x = 0; $x < $writeAttempts; $x++)
+        {
+            $user->name = 'test';
+        }
+
+        $this->assertEquals($writeAttempts, $counter);
+    }
+
+    public function testMasqueradingOnVariableWrite()
+    {
+        $value = 'test213';
+        $user = new External\Classes\User();
+        $user->registerEvent('write', 'name', function() use ($value){
+            return $value;
+        });
+
+        $user->name = 'somethingElse';
+
+        $this->assertEquals($value, $user->name);
+    }
 
     public function testObjectReadEvent()
     {
@@ -186,7 +241,6 @@ class VariableTest extends VentTestCase
         $user->_ventVariables = '123';
     }
 
-
     /**
      * @expectedException \Exception
      */
@@ -203,6 +257,25 @@ class VariableTest extends VentTestCase
     {
         $user = new External\Classes\User();
         $user->_ventRegistered = '123';
+    }
+
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testExceptionThrownWhenReadingReservedFunctionsProperty()
+    {
+        $user = new External\Classes\User();
+        $user->_ventFunctions;
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testExceptionThrownWhenWritingReservedFunctionsProperty()
+    {
+        $user = new External\Classes\User();
+        $user->_ventFunctions = '123';
     }
 
 }
