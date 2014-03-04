@@ -129,11 +129,6 @@ trait VentTrait
                     $this->_ventEvents['write'][$name][$x]['params']
                 );
 
-                if ($this->_ventEvents['write'][$name][$x]['retain'] && is_null($response))
-                {
-                    throw new \Exception('Event registered on write of variable "' . $name . '" does not return a retainable response - cannot be null');
-                }
-
                 // If we have a response, set and return it
                 if (isset($response))
                 {
@@ -183,11 +178,6 @@ trait VentTrait
                     $this->_ventEvents['read'][$name][$x]['callable'],
                     $this->_ventEvents['read'][$name][$x]['params']
                 );
-
-                if ($this->_ventEvents['read'][$name][$x]['retain'] && is_null($response))
-                {
-                    throw new \Exception('Event registered on read of variable "' . $name . '" does not return a retainable response - cannot be null');
-                }
 
                 // If we have a response, return it
                 if (isset($response))

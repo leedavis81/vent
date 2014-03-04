@@ -10,16 +10,6 @@ namespace VentTest;
 class VariableTest extends VentTestCase
 {
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionWhenRetainingReadWithNullResponse()
-    {
-        $user = new External\Classes\User();
-        $user->registerEvent('read', 'name', function(){}, null, true);
-        $user->name;
-    }
-
     public function testReadRetainingResponse()
     {
         $counter = 0;
@@ -131,6 +121,18 @@ class VariableTest extends VentTestCase
 
         $this->assertSame($firstName, $user->name->first);
         $this->assertEquals(1, $counter);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testDeleteEvent()
+    {
+        $user = new External\Classes\User();
+        $user->registerEvent('delete', 'name', function() {
+            throw new \Exception('delete event run');
+        });
+        unset($user->name);
     }
 
     /**

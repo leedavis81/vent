@@ -169,5 +169,4 @@ class Foo()
 
 ### todos
 - Allow event triggering for array offset reads $foo->bar['offset'];
-- Expand event scope to include 'delete'
 - Add a method to remove variables from proxy (to increase perf)
