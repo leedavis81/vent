@@ -1,8 +1,8 @@
 <?php
-namespace VentTest\External;
+namespace League\VentTest\External;
 
-use VentTest\VentTestCase;
-use VentTest\External\Classes\User;
+use League\VentTest\VentTestCase;
+use League\VentTest\External\Classes\User;
 class VariableTest extends VentTestCase
 {
 

@@ -1,8 +1,13 @@
 <?php
-namespace VentTest\External\Classes;
+namespace League\VentTest\External\Classes;
 
-use Vent\VentTrait;
+use League\Vent\VentTrait;
 
+/**
+ * Class User
+ * Example User Model used for testing
+ * @package League\VentTest\External\Classes
+ */
 class User
 {
     use VentTrait {registerEvent as public;}

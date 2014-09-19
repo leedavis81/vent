@@ -1,4 +1,4 @@
 .idea
 composer.lock
 vendor
-examples
+.DS_Store

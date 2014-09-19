@@ -1,6 +1,6 @@
 <?php
 
-namespace VentTest;
+namespace League\VentTest;
 
 /**
  * Tests that don't concern scope live here
@@ -206,78 +206,4 @@ class VariableTest extends VentTestCase
 //        $user->name['firstName'] = $firstName;
 //        $this->assertEquals(1, $counter);
 //    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionThrownWhenReadingReservedEventProperty()
-    {
-        $user = new External\Classes\User();
-        $user->_ventEvents;
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionThrownWhenWritingReservedEventProperty()
-    {
-        $user = new External\Classes\User();
-        $user->_ventEvents = '123';
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionThrownWhenReadingReservedVariableProperty()
-    {
-        $user = new External\Classes\User();
-        $user->_ventVariables;
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionThrownWhenWritingReservedVariableProperty()
-    {
-        $user = new External\Classes\User();
-        $user->_ventVariables = '123';
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionThrownWhenReadingReservedRegisteredProperty()
-    {
-        $user = new External\Classes\User();
-        $user->_ventRegistered;
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionThrownWhenWritingReservedRegisteredProperty()
-    {
-        $user = new External\Classes\User();
-        $user->_ventRegistered = '123';
-    }
-
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionThrownWhenReadingReservedFunctionsProperty()
-    {
-        $user = new External\Classes\User();
-        $user->_ventFunctions;
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExceptionThrownWhenWritingReservedFunctionsProperty()
-    {
-        $user = new External\Classes\User();
-        $user->_ventFunctions = '123';
-    }
-
 }

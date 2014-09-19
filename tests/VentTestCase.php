@@ -1,5 +1,5 @@
 <?php
-namespace VentTest;
+namespace League\VentTest;
 
 /**
  * Base Vent test case class

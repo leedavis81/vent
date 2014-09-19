@@ -1,6 +1,6 @@
 {
-    "name": "leedavis81/vent",
-    "description": "PHP variable events.",
+    "name": "phpleague/vent",
+    "description": "PHP property access event system",
     "keywords": ["php", "event", "variable"],
     "license": "MIT",
     "type": "library",
@@ -8,18 +8,27 @@
         {
             "name": "Lee Davis",
             "email": "leedavis81@hotmail.com",
-            "homepage": "http://www.duckheads.co.uk",
-            "role": "Developer"
+            "homepage": "http://leedavis81.github.io"
         }
     ],    
     "require": {
-        "php": ">=5.4"
+        "php": ">=5.4",
+        "league/event": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*",
+        "phpunit/phpunit": "~4.1",
         "satooshi/php-coveralls": "~0.6"
     },
     "autoload": {
-        "psr-0": { "Vent\\": "src/", "VentTest\\": "tests/"}
+        "psr-4": {
+            "League\\Vent\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "League\\VentTest\\": "tests"
+        }
     }
+
+
 }
