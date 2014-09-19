@@ -6,7 +6,7 @@ namespace League\VentTest;
  * Class VentTestCase
  * @package VentTest
  */
-abstract class VentTestCase extends  \PHPUnit_Framework_TestCase
+abstract class VentTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
      * Perform setUp tasks

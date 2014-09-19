@@ -10,7 +10,9 @@ use League\Vent\VentTrait;
  */
 class User
 {
-    use VentTrait {registerEvent as public;}
+    use VentTrait {
+        registerEvent as public;
+    }
 
     public $name;
     protected $address;

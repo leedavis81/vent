@@ -32,26 +32,26 @@ trait VentTrait
      * @param array|null $params - an array of parameters to be passed into the action
      * @param bool $retainResponse
      */
-    private function registerEvent($event, $variables, \Closure $callable, array $params = null, $retainResponse = false)
-    {
+    private function registerEvent(
+        $event,
+        $variables,
+        \Closure $callable,
+        array $params = null,
+        $retainResponse = false
+    ) {
         // this should really be move into some form of init(), can we steal the __construct?
-        if (!$this->_ventEventEmitter instanceof EventEmitter)
-        {
+        if (!$this->_ventEventEmitter instanceof EventEmitter) {
             $this->_ventEventEmitter = new EventEmitter();
 
             // All functions are registered to this array save littering object internals
-            $this->_ventFunctions['replaceReservedParams'] = function($params, $name, $value = null){
+            $this->_ventFunctions['replaceReservedParams'] = function ($params, $name, $value = null) {
                 $paramSize = sizeof($params);
-                for($x = 0; $x < $paramSize; $x++)
-                {
-                    if ($params[$x] === '_CUR_VALUE_')
-                    {
+                for ($x = 0; $x < $paramSize; $x++) {
+                    if ($params[$x] === '_CUR_VALUE_') {
                         $params[$x] = (isset($this->_ventVariables[$name])) ? $this->_ventVariables[$name] : null;
-                    } elseif ($params[$x] === '_OVL_NAME_')
-                    {
+                    } elseif ($params[$x] === '_OVL_NAME_') {
                         $params[$x] = $name;
-                    } elseif ($params[$x] === '_OVL_VALUE_' && $value !== null)
-                    {
+                    } elseif ($params[$x] === '_OVL_VALUE_' && $value !== null) {
                         $params[$x] = $value;
                     }
                 }
@@ -59,16 +59,16 @@ trait VentTrait
             };
         }
 
-        foreach (array_filter((array) $event, function($item) {
-            return in_array($item, ['read', 'write', 'get', 'set', 'delete', 'unset']);
-        }) as $event)
-        {
-            foreach (array_unique((array) $variables) as $var)
-            {
+        foreach (array_filter(
+                     (array)$event,
+                     function ($item) {
+                         return in_array($item, ['read', 'write', 'get', 'set', 'delete', 'unset']);
+                     }
+                 ) as $event) {
+            foreach (array_unique((array)$variables) as $var) {
                 // Don't check and fail on property_exists, they may be overloading
                 // this should only occur once per variable, to prevent re-reads occurring ($this->$var will trigger __get)
-                if (!isset($this->_ventVariables[$var]))
-                {
+                if (!isset($this->_ventVariables[$var])) {
                     // The property could exist but isn't set yet, force it as null to avoid additional overload look ups for multiple events
                     $this->_ventVariables[$var] = ($this->$var !== null) ? $this->$var : new Null();
 
@@ -77,14 +77,11 @@ trait VentTrait
                 }
 
                 $callbackListener = new CallbackListener($callable, $params, $retainResponse);
-                if ($event === 'read' || $event === 'get')
-                {
+                if ($event === 'read' || $event === 'get') {
                     $this->_ventEventEmitter->addListener('read.' . $var, $callbackListener);
-                } elseif ($event === 'write' || $event === 'set')
-                {
+                } elseif ($event === 'write' || $event === 'set') {
                     $this->_ventEventEmitter->addListener('write.' . $var, $callbackListener);
-                } elseif ($event === 'delete' || $event === 'unset')
-                {
+                } elseif ($event === 'delete' || $event === 'unset') {
                     $this->_ventEventEmitter->addListener('delete.' . $var, $callbackListener);
                 }
             }
@@ -100,22 +97,21 @@ trait VentTrait
      */
     public function __set($name, $value)
     {
-        $event = new Event('write.'.$name);
-        if (isset($this->_ventEventEmitter) && $this->_ventEventEmitter->hasListeners($event->getName()))
-        {
-            foreach ($this->_ventEventEmitter->getListeners($event->getName()) as $listener)
-            {
+        $event = new Event('write.' . $name);
+        if (isset($this->_ventEventEmitter) && $this->_ventEventEmitter->hasListeners($event->getName())) {
+            foreach ($this->_ventEventEmitter->getListeners($event->getName()) as $listener) {
                 /** @var CallbackListener $listener */
                 // replace reserved keywords
-                $listener->setParams(call_user_func(
-                    $this->_ventFunctions['replaceReservedParams'],
-                    $listener->getParams(),
-                    $name,
-                    $value
-                ));
+                $listener->setParams(
+                    call_user_func(
+                        $this->_ventFunctions['replaceReservedParams'],
+                        $listener->getParams(),
+                        $name,
+                        $value
+                    )
+                );
 
-                if (($response = $listener->handle($event)) !== null)
-                {
+                if (($response = $listener->handle($event)) !== null) {
                     return $this->_ventVariables[$name] = $response;
                 }
             }
@@ -133,31 +129,29 @@ trait VentTrait
      */
     public function &__get($name)
     {
-        $event = new Event('read.'.$name);
-        if (isset($this->_ventEventEmitter) && $this->_ventEventEmitter->hasListeners($event->getName()))
-        {
-            foreach ($this->_ventEventEmitter->getListeners($event->getName()) as $listener)
-            {
+        $event = new Event('read.' . $name);
+        if (isset($this->_ventEventEmitter) && $this->_ventEventEmitter->hasListeners($event->getName())) {
+            foreach ($this->_ventEventEmitter->getListeners($event->getName()) as $listener) {
                 /**
                  * @var CallbackListener $listener
                  */
                 // replace reserved keywords
-                $listener->setParams(call_user_func(
-                    $this->_ventFunctions['replaceReservedParams'],
-                    $listener->getParams(),
-                    $name
-                ));
+                $listener->setParams(
+                    call_user_func(
+                        $this->_ventFunctions['replaceReservedParams'],
+                        $listener->getParams(),
+                        $name
+                    )
+                );
 
-                if (($response = $listener->handle($event)) !== null)
-                {
+                if (($response = $listener->handle($event)) !== null) {
                     return $response;
                 }
             }
         }
 
         // If the variable is unset, or a Null instance return a local object reference;
-        if (!isset($this->_ventVariables[$name]) || $this->_ventVariables[$name] instanceof Null)
-        {
+        if (!isset($this->_ventVariables[$name]) || $this->_ventVariables[$name] instanceof Null) {
             return $this->$name;
         }
 
@@ -172,23 +166,22 @@ trait VentTrait
      */
     public function __unset($name)
     {
-        $event = new Event('delete.'.$name);
-        if (isset($this->_ventEventEmitter) && $this->_ventEventEmitter->hasListeners($event->getName()))
-        {
-            foreach ($this->_ventEventEmitter->getListeners($event->getName()) as $listener)
-            {
+        $event = new Event('delete.' . $name);
+        if (isset($this->_ventEventEmitter) && $this->_ventEventEmitter->hasListeners($event->getName())) {
+            foreach ($this->_ventEventEmitter->getListeners($event->getName()) as $listener) {
                 /**
                  * @var CallbackListener $listener
                  */
                 // replace reserved keywords
-                $listener->setParams(call_user_func(
-                    $this->_ventFunctions['replaceReservedParams'],
-                    $listener->getParams(),
-                    $name
-                ));
+                $listener->setParams(
+                    call_user_func(
+                        $this->_ventFunctions['replaceReservedParams'],
+                        $listener->getParams(),
+                        $name
+                    )
+                );
 
-                if (($response = $listener->handle($event)) !== null)
-                {
+                if (($response = $listener->handle($event)) !== null) {
                     return $response;
                 }
             }

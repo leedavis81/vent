@@ -14,10 +14,9 @@ class VariableTest extends VentTestCase
     {
         $counter = 0;
         $readAttempts = 5;
-        $runOnce = function() use (&$counter){
+        $runOnce = function () use (&$counter) {
             $counter++;
-            if ($counter > 1)
-            {
+            if ($counter > 1) {
                 throw new \Exception('This callable should have only ever been run once!');
             }
             return 'madeUpRetainableResponse';
@@ -25,8 +24,7 @@ class VariableTest extends VentTestCase
 
         $user = new External\Classes\User();
         $user->registerEvent('read', 'name', $runOnce, null, true);
-        for ($x = 0; $x < $readAttempts; $x++)
-        {
+        for ($x = 0; $x < $readAttempts; $x++) {
             $user->name;
         }
         $this->assertEquals(1, $counter);
@@ -36,15 +34,14 @@ class VariableTest extends VentTestCase
     {
         $counter = 0;
         $readAttempts = 5;
-        $runMany = function() use (&$counter){
+        $runMany = function () use (&$counter) {
             $counter++;
             return 'madeUpResponse';
         };
 
         $user = new External\Classes\User();
         $user->registerEvent('read', 'name', $runMany);
-        for ($x = 0; $x < $readAttempts; $x++)
-        {
+        for ($x = 0; $x < $readAttempts; $x++) {
             $user->name;
         }
 
@@ -56,10 +53,9 @@ class VariableTest extends VentTestCase
     {
         $counter = 0;
         $writeAttempts = 5;
-        $runOnce = function() use (&$counter){
+        $runOnce = function () use (&$counter) {
             $counter++;
-            if ($counter > 1)
-            {
+            if ($counter > 1) {
                 throw new \Exception('This callable should have only ever been run once!');
             }
             return 'madeUpRetainableResponse';
@@ -67,8 +63,7 @@ class VariableTest extends VentTestCase
 
         $user = new External\Classes\User();
         $user->registerEvent('write', 'name', $runOnce, null, true);
-        for ($x = 0; $x < $writeAttempts; $x++)
-        {
+        for ($x = 0; $x < $writeAttempts; $x++) {
             $user->name = 'test';
         }
         $this->assertEquals(1, $counter);
@@ -79,15 +74,14 @@ class VariableTest extends VentTestCase
     {
         $counter = 0;
         $writeAttempts = 5;
-        $runMany = function() use (&$counter){
+        $runMany = function () use (&$counter) {
             $counter++;
             return 'madeUpResponse';
         };
 
         $user = new External\Classes\User();
         $user->registerEvent('write', 'name', $runMany);
-        for ($x = 0; $x < $writeAttempts; $x++)
-        {
+        for ($x = 0; $x < $writeAttempts; $x++) {
             $user->name = 'test';
         }
 
@@ -98,9 +92,13 @@ class VariableTest extends VentTestCase
     {
         $value = 'test213';
         $user = new External\Classes\User();
-        $user->registerEvent('write', 'name', function() use ($value){
-            return $value;
-        });
+        $user->registerEvent(
+            'write',
+            'name',
+            function () use ($value) {
+                return $value;
+            }
+        );
 
         $user->name = 'somethingElse';
 
@@ -115,9 +113,13 @@ class VariableTest extends VentTestCase
         $user->name->first = $firstName;
 
         $counter = 0;
-        $user->registerEvent('read', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'read',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
 
         $this->assertSame($firstName, $user->name->first);
         $this->assertEquals(1, $counter);
@@ -129,9 +131,13 @@ class VariableTest extends VentTestCase
     public function testDeleteEvent()
     {
         $user = new External\Classes\User();
-        $user->registerEvent('delete', 'name', function() {
-            throw new \Exception('delete event run');
-        });
+        $user->registerEvent(
+            'delete',
+            'name',
+            function () {
+                throw new \Exception('delete event run');
+            }
+        );
         unset($user->name);
     }
 
@@ -144,9 +150,13 @@ class VariableTest extends VentTestCase
         $user = new External\Classes\User();
 
         $counter = 0;
-        $user->registerEvent('write', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'write',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
 
         $user->name = new \StdClass();
         $this->assertEquals(1, $counter);
@@ -167,9 +177,13 @@ class VariableTest extends VentTestCase
 
         $firstName = 'LeeRoy';
         $user->name = ['firstName' => $firstName];
-        $user->registerEvent('read', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'read',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
 
         $this->assertSame($firstName, $user->name['firstName']);
         $this->assertEquals(1, $counter);
@@ -183,9 +197,13 @@ class VariableTest extends VentTestCase
         $user = new External\Classes\User();
 
         $counter = 0;
-        $user->registerEvent('write', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'write',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
 
         $firstName = 'LeeRoy';
         $user->name = ['firstName' => $firstName];

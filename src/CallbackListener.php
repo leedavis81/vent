@@ -2,6 +2,7 @@
 
 namespace League\Vent;
 
+use League\Event\AbstractEvent;
 use League\Event\CallbackListener as LeagueCallbackListener;
 
 class CallbackListener extends LeagueCallbackListener
@@ -34,7 +35,7 @@ class CallbackListener extends LeagueCallbackListener
     public function __construct(callable $callback, array $params = null, $retainResponse = false)
     {
         $this->callback = $callback;
-        $this->setParams((array) $params);
+        $this->setParams((array)$params);
         $this->retainResponse = $retainResponse;
     }
 
@@ -42,21 +43,18 @@ class CallbackListener extends LeagueCallbackListener
     /**
      * Handle an event.
      *
-     * @param \League\Event\AbstractEvent $event
+     * @param AbstractEvent $event
      * @return mixed
      */
-    public function handle(\League\Event\AbstractEvent $event)
+    public function handle(AbstractEvent $event)
     {
-        if ($this->hasRetainedResponse())
-        {
+        if ($this->hasRetainedResponse()) {
             return $this->getRetainedResponse();
         }
 
         $response = call_user_func_array($this->getCallback(), $this->getParams());
-        if ($response !== null)
-        {
-            if ($this->retainResponse)
-            {
+        if ($response !== null) {
+            if ($this->retainResponse) {
                 $this->setRetainedResponse($response);
             }
         }

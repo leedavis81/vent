@@ -3,6 +3,7 @@ namespace League\VentTest\External;
 
 use League\VentTest\VentTestCase;
 use League\VentTest\External\Classes\User;
+
 class VariableTest extends VentTestCase
 {
 
@@ -10,9 +11,13 @@ class VariableTest extends VentTestCase
     {
         $user = new User();
         $counter = 0;
-        $user->registerEvent('read', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'read',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
         $user->name;
         $this->assertSame(1, $counter);
     }
@@ -22,12 +27,20 @@ class VariableTest extends VentTestCase
         $user = new User();
         $counter = 0;
 
-        $user->registerEvent('read', 'name', function() use (&$counter){
-            $counter++;
-        });
-        $user->registerEvent('read', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'read',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
+        $user->registerEvent(
+            'read',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
 
         $user->name;
         $this->assertSame(2, $counter);
@@ -38,9 +51,14 @@ class VariableTest extends VentTestCase
         $user = new User();
 
         $name = 'bill';
-        $user->registerEvent('read', 'name', function($name){
-            return $name;
-        }, [$name]);
+        $user->registerEvent(
+            'read',
+            'name',
+            function ($name) {
+                return $name;
+            },
+            [$name]
+        );
 
         $this->assertEquals($name, $user->name);
     }
@@ -50,9 +68,14 @@ class VariableTest extends VentTestCase
         $user = new User();
 
         $newName = 'bill';
-        $user->registerEvent('write', 'name', function(&$name) {
-            $name = 'bob';
-        }, [&$newName]);
+        $user->registerEvent(
+            'write',
+            'name',
+            function (&$name) {
+                $name = 'bob';
+            },
+            [&$newName]
+        );
 
         $user->name = 'ben';
 
@@ -64,9 +87,14 @@ class VariableTest extends VentTestCase
     {
         $user = new User();
         $user->name = '';
-        $user->registerEvent('read', 'name', function($overloadedName){
-            return $overloadedName . '_SOMEEXTRA';
-        }, ['_OVL_NAME_']);
+        $user->registerEvent(
+            'read',
+            'name',
+            function ($overloadedName) {
+                return $overloadedName . '_SOMEEXTRA';
+            },
+            ['_OVL_NAME_']
+        );
 
         $this->assertEquals('name_SOMEEXTRA', $user->name);
     }
@@ -77,9 +105,14 @@ class VariableTest extends VentTestCase
 
         $firstName = 'bill';
 
-        $user->registerEvent('write', 'name', function(&$firstName, $overloadedName, $overloadedValue) {
-            $firstName = 'bob_' . $overloadedName . '_' . $overloadedValue;
-        }, [&$firstName, '_OVL_NAME_', '_OVL_VALUE_']);
+        $user->registerEvent(
+            'write',
+            'name',
+            function (&$firstName, $overloadedName, $overloadedValue) {
+                $firstName = 'bob_' . $overloadedName . '_' . $overloadedValue;
+            },
+            [&$firstName, '_OVL_NAME_', '_OVL_VALUE_']
+        );
 
         $user->name = 'ben';
 
@@ -91,9 +124,13 @@ class VariableTest extends VentTestCase
     {
         $user = new User();
         $counter = 0;
-        $user->registerEvent('get', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'get',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
         $user->name;
         $this->assertSame(1, $counter);
     }
@@ -107,9 +144,13 @@ class VariableTest extends VentTestCase
         $user->setName($testName);
 
         $string = 'SomeRandomStringABC123';
-        $user->registerEvent('read', 'name', function() use ($string){
-            return $string;
-        });
+        $user->registerEvent(
+            'read',
+            'name',
+            function () use ($string) {
+                return $string;
+            }
+        );
 
         $response = $user->name;
 
@@ -120,9 +161,13 @@ class VariableTest extends VentTestCase
     {
         $user = new User();
         $counter = 0;
-        $user->registerEvent('write', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'write',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
         $this->assertSame(0, $counter);
         $user->name = 'LeeRoy';
         $this->assertSame(1, $counter);
@@ -132,9 +177,13 @@ class VariableTest extends VentTestCase
     {
         $user = new User();
         $counter = 0;
-        $user->registerEvent('set', 'name', function() use (&$counter){
-            $counter++;
-        });
+        $user->registerEvent(
+            'set',
+            'name',
+            function () use (&$counter) {
+                $counter++;
+            }
+        );
         $this->assertSame(0, $counter);
         $user->name = 'LeeRoy';
         $this->assertSame(1, $counter);
