@@ -65,6 +65,18 @@ trait VentTrait
                          return in_array($item, ['read', 'write', 'get', 'set', 'delete', 'unset']);
                      }
                  ) as $event) {
+            // transform from any alias used
+            switch ($event) {
+                case 'get':
+                    $event = 'read';
+                    break;
+                case 'set':
+                    $event = 'write';
+                    break;
+                case 'unset':
+                    $event = 'delete';
+                    break;
+            }
             foreach (array_unique((array)$variables) as $var) {
                 // Don't check and fail on property_exists, they may be overloading
                 // this should only occur once per variable, to prevent re-reads occurring ($this->$var will trigger __get)
@@ -76,14 +88,10 @@ trait VentTrait
                     unset($this->$var);
                 }
 
-                $callbackListener = new CallbackListener($callable, $params, $retainResponse);
-                if ($event === 'read' || $event === 'get') {
-                    $this->_ventEventEmitter->addListener('read.' . $var, $callbackListener);
-                } elseif ($event === 'write' || $event === 'set') {
-                    $this->_ventEventEmitter->addListener('write.' . $var, $callbackListener);
-                } elseif ($event === 'delete' || $event === 'unset') {
-                    $this->_ventEventEmitter->addListener('delete.' . $var, $callbackListener);
-                }
+                $this->_ventEventEmitter->addListener(
+                    $event . '.' . $var,
+                    new CallbackListener($callable, $params, $retainResponse)
+                );
             }
         }
     }
