@@ -75,7 +75,7 @@ trait VentTrait
                 if (!isset($this->_ventVariables[$var]))
                 {
                     // The property could exist but isn't set yet, force it as null to avoid additional overload look ups for multiple events
-                    $this->_ventVariables[$var] = ($this->$var !== null) ? $this->$var : new Null();
+                    $this->_ventVariables[$var] = ($this->$var !== null) ? $this->$var : new NullValue();
 
                     // Only attempt unset once we have it copied
                     unset($this->$var);
@@ -191,8 +191,8 @@ trait VentTrait
             }
         }
 
-        // If the variable is unset, or a Null instance return a local object reference;
-        if (!isset($this->_ventVariables[$name]) || $this->_ventVariables[$name] instanceof Null)
+        // If the variable is unset, or a NullValue instance return a local object reference;
+        if (!isset($this->_ventVariables[$name]) || $this->_ventVariables[$name] instanceof NullValue)
         {
             return $this->$name;
         }
