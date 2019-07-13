@@ -1,12 +1,14 @@
 <?php
 namespace VentTest;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Base Vent test case class
  * Class VentTestCase
  * @package VentTest
  */
-abstract class VentTestCase extends  \PHPUnit_Framework_TestCase
+abstract class VentTestCase extends TestCase
 {
     /**
      * Perform setUp tasks
@@ -21,5 +23,4 @@ abstract class VentTestCase extends  \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
     }
-
 }

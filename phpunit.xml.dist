@@ -8,7 +8,6 @@
          verbose="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="true"
          bootstrap="./tests/VentTest/Bootstrap.php">
 
     <testsuites>
@@ -20,5 +19,4 @@
     <logging>
         <log type="coverage-clover" target="build/logs/clover.xml"/>
     </logging>
-
 </phpunit>
