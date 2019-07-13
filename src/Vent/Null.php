@@ -2,9 +2,9 @@
 namespace Vent;
 
 /**
- * Class Null - used as a replacement in null test to differentiate from uninitialised properties
+ * Class Null - used as a replacement in null test to differentiate from uninitialized properties
  * @package Vent
  */
-class Null
+class NullValue
 {
 }
